@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import { Plus, Van } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
 
 const showIcon = ref(true);
 const handleChange = (file) => {
@@ -13,7 +14,20 @@ const handleChange = (file) => {
 const uploadEle = ref(null);
 const reUploadImg = () => {
   showIcon.value = true;
+  licensePlateImg.value = "";
+  licensePlateText.value = "";
+  licensePlateColor.value = "white";
   uploadEle.value.clearFiles();
+};
+
+const uploadSuccess = (response) => {
+  ElMessage({
+    message: "上传成功",
+    type: "success",
+  });
+  console.log("successfully uploaded", response);
+  licensePlateImg.value = response.fileSrc;
+  console.log(response.fileSrc);
 };
 
 // 车牌图片、车牌文本、车牌颜色
@@ -29,11 +43,13 @@ let licensePlateColor = ref("white");
         <div class="upload-img-area">
           <el-upload
             ref="uploadEle"
-            action="#"
+            action="http://localhost:5555/uploadImg"
             list-type="picture"
-            :auto-upload="false"
+            :auto-upload="true"
             :limit="1"
             :on-change="handleChange"
+            :on-success="uploadSuccess"
+            accept=".jpg, .png"
           >
             <el-icon :size="20" style="margin: 288px 400px" v-if="showIcon"
               ><Plus
@@ -111,8 +127,13 @@ let licensePlateColor = ref("white");
 }
 
 .el-upload-list__item-thumbnail {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+:deep(.upload-img-area) .el-upload-list {
   width: 100%;
-  height: 100%;
+  /* height: 540px; */
 }
 
 :deep(.upload-img-area) .el-upload--picture-card {
@@ -127,6 +148,7 @@ let licensePlateColor = ref("white");
   border: none;
   width: 100%;
   height: 100%;
+  margin: -25px 0 0 0;
 }
 .icon-text {
   display: flex;
