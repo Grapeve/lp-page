@@ -18,7 +18,7 @@ const reUploadImg = () => {
 
 // 车牌图片、车牌文本、车牌颜色
 let licensePlateImg = ref("");
-let licensePlateText = ref("粤A·123456");
+let licensePlateText = ref("");
 let licensePlateColor = ref("white");
 </script>
 
@@ -75,7 +75,7 @@ let licensePlateColor = ref("white");
             <span class="icon-text">
               <el-icon class="icon-margin"><Van /></el-icon>车牌识别
             </span>
-            <text v-if="!licensePlateText" class="lpt"
+            <text v-if="licensePlateText" class="lpt"
               >{{ licensePlateText }}
             </text>
             <div v-else class="lpt-empty">XXXXXX</div>
