@@ -4,10 +4,9 @@ import { Plus, Van } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 
 const showIcon = ref(true);
-const handleChange = (file) => {
-  console.log(file); // file为上传的图片对象
+const handleChange = (res) => {
+  console.log("*****", res);
   showIcon.value = false;
-  // TODO: 调用后端接口将图片传过去，并接收返回结果
 };
 
 // 上传对象实例
@@ -21,13 +20,30 @@ const reUploadImg = () => {
 };
 
 const uploadSuccess = (response) => {
+  if (response.status === "success") {
+    ElMessage({
+      message: "识别成功",
+      type: "success",
+    });
+    console.log("successfully uploaded", response);
+    licensePlateImg.value = response.fileSrc;
+    licensePlateText.value = response.lptext;
+    licensePlateColor.value = response.lpcolor;
+    console.log(response.fileSrc);
+  } else {
+    ElMessage({
+      message: "识别失败",
+      type: "error",
+    });
+  }
+};
+
+const uploadError = () => {
+  showIcon.value = true;
   ElMessage({
-    message: "上传成功",
-    type: "success",
+    message: "上传失败",
+    type: "error",
   });
-  console.log("successfully uploaded", response);
-  licensePlateImg.value = response.fileSrc;
-  console.log(response.fileSrc);
 };
 
 // 车牌图片、车牌文本、车牌颜色
@@ -50,6 +66,7 @@ let licensePlateColor = ref("white");
             :on-change="handleChange"
             :on-success="uploadSuccess"
             accept=".jpg, .png"
+            :on-error="uploadError"
           >
             <el-icon :size="20" style="margin: 288px 400px" v-if="showIcon"
               ><Plus
@@ -167,7 +184,6 @@ let licensePlateColor = ref("white");
 }
 .license-plate-detection-img {
   margin-top: 8px;
-  border: 1px solid #409eff;
   width: 200px;
   height: 50px;
 }
