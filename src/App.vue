@@ -5,7 +5,9 @@ import { RouterLink, RouterView } from "vue-router";
 <template>
   <div class="wrapper">
     <nav>
-      <RouterLink to="/">车牌识别</RouterLink>
+      <RouterLink to="/" style="font-size: 32px"
+        >欢迎来到车牌自动识别主页</RouterLink
+      >
       <!-- <RouterLink to="/about">About</RouterLink> -->
     </nav>
   </div>

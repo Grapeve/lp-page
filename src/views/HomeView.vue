@@ -3,15 +3,18 @@ import { ref } from "vue";
 import { Plus, Van } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 
+const timeConsuming = ref(0);
 const showIcon = ref(true);
+
 const handleChange = (res) => {
-  console.log("*****", res);
+  // console.log("^^^^", res);
   showIcon.value = false;
 };
 
 // 上传对象实例
 const uploadEle = ref(null);
 const reUploadImg = () => {
+  timeConsuming.value = 0;
   showIcon.value = true;
   licensePlateImg.value = "";
   licensePlateText.value = "";
@@ -22,14 +25,17 @@ const reUploadImg = () => {
 const uploadSuccess = (response) => {
   if (response.status === "success") {
     ElMessage({
-      message: "识别成功",
+      message:
+        "识别成功, 耗时" +
+        (new Date().getTime() - timeConsuming.value) / 1000 +
+        "s",
       type: "success",
     });
-    console.log("successfully uploaded", response);
     licensePlateImg.value = response.fileSrc;
     licensePlateText.value = response.lptext;
     licensePlateColor.value = response.lpcolor;
-    console.log(response.fileSrc);
+    // console.log("successfully uploaded", response);
+    // console.log(response.fileSrc);
   } else {
     ElMessage({
       message: "识别失败",
@@ -39,11 +45,16 @@ const uploadSuccess = (response) => {
 };
 
 const uploadError = () => {
+  timeConsuming.value = 0;
   showIcon.value = true;
   ElMessage({
     message: "上传失败",
     type: "error",
   });
+};
+
+const uploadBefore = () => {
+  timeConsuming.value = new Date().getTime();
 };
 
 // 车牌图片、车牌文本、车牌颜色
@@ -59,7 +70,7 @@ let licensePlateColor = ref("white");
         <div class="upload-img-area">
           <el-upload
             ref="uploadEle"
-            action="http://localhost:5555/uploadImg"
+            action="http://120.76.203.186:6789/uploadImg"
             list-type="picture"
             :auto-upload="true"
             :limit="1"
@@ -67,6 +78,7 @@ let licensePlateColor = ref("white");
             :on-success="uploadSuccess"
             accept=".jpg, .png"
             :on-error="uploadError"
+            :before-upload="uploadBefore"
           >
             <el-icon :size="20" style="margin: 288px 400px" v-if="showIcon"
               ><Plus
@@ -98,10 +110,7 @@ let licensePlateColor = ref("white");
               :src="licensePlateImg"
               class="license-plate-detection-img"
             />
-            <div
-              v-else
-              style="width: 200px; height: 50px; border: 1px solid #409eff"
-            ></div>
+            <div v-else style="width: 200px; height: 50px"></div>
           </div>
           <el-divider style="margin-top: 10px" />
           <div class="license-plate-recognition">
@@ -111,7 +120,7 @@ let licensePlateColor = ref("white");
             <text v-if="licensePlateText" class="lpt"
               >{{ licensePlateText }}
             </text>
-            <div v-else class="lpt-empty">XXXXXX</div>
+            <div v-else class="lpt-empty"></div>
           </div>
           <el-divider style="margin-top: 10px" />
           <div class="license-plate-color">
@@ -213,7 +222,7 @@ let licensePlateColor = ref("white");
 .lpt-empty {
   /* width: 200px;
   height: 50px; */
-  margin: 8px 0 3px 0;
+  margin: 40px 0 3px 0;
 }
 .lpc {
   margin: 10px 0 6px 0;
