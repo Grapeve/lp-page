@@ -1,31 +1,21 @@
-# 车牌识别
+# 车牌识别页面
 
-This template should help get you started developing with Vue 3 in Vite.
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
 
 ## Project Setup
 
+node版本 > 16
+
+没有pnpm先使用npm安装pnpm
+
+`npm install pnpm`
+
 ```sh
-npm install
+pnpm install
 ```
 
 ### Compile and Hot-Reload for Development
 
 ```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
+pnpm run dev
 ```

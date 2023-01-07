@@ -55,7 +55,7 @@ let licensePlateColor = ref("white");
 <template>
   <div class="common-layout">
     <el-container>
-      <el-aside width="80%" style="margin-right: 10px">
+      <el-aside width="80%" style="margin-right: 0px">
         <div class="upload-img-area">
           <el-upload
             ref="uploadEle"
@@ -135,6 +135,7 @@ let licensePlateColor = ref("white");
 .upload-img-area {
   height: 600px;
   border: 1px solid #409eff;
+  border-right: none;
   border-radius: 20px 0 0 20px;
 }
 .result-area {
