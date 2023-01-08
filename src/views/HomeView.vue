@@ -19,6 +19,7 @@ const reUploadImg = () => {
   licensePlateImg.value = "";
   licensePlateText.value = "";
   licensePlateColor.value = "white";
+  imgsPreText.value = ["", "", "", ""];
   uploadEle.value.clearFiles();
 };
 
@@ -34,8 +35,10 @@ const uploadSuccess = (response) => {
     licensePlateImg.value = response.fileSrc;
     licensePlateText.value = response.lptext;
     licensePlateColor.value = response.lpcolor;
-    // console.log("successfully uploaded", response);
-    // console.log(response.fileSrc);
+    if (response.imgPres) {
+      imgsPreText.value = response.imgPres;
+      console.log(imgsPreText.value);
+    }
   } else {
     ElMessage({
       message: "识别失败",
@@ -61,6 +64,27 @@ const uploadBefore = () => {
 let licensePlateImg = ref("");
 let licensePlateText = ref("");
 let licensePlateColor = ref("white");
+
+let nowTime = ref("");
+setInterval(() => {
+  const year = new Date().getFullYear();
+  const month = new Date().getMonth() + 1;
+  const day = new Date().getDate();
+  const hour = new Date().getHours();
+  const minute = new Date().getMinutes();
+  const second = new Date().getSeconds();
+  nowTime.value =
+    year + "/" + month + "/" + day + " " + hour + ":" + minute + ":" + second;
+}, 1);
+
+// 图像预处理
+const imgPreText = ref([
+  "提取车牌颜色",
+  "形态学处理",
+  "二值化处理",
+  "轮廓定位",
+]);
+const imgsPreText = ref(["", "", "", ""]);
 </script>
 
 <template>
@@ -105,14 +129,15 @@ let licensePlateColor = ref("white");
             <span class="icon-text">
               <el-icon class="icon-margin"><Van /></el-icon>车牌检测
             </span>
-            <img
+            <el-image
               v-if="licensePlateImg"
               :src="licensePlateImg"
+              fit="cover"
               class="license-plate-detection-img"
             />
             <div v-else style="width: 200px; height: 50px"></div>
           </div>
-          <el-divider style="margin-top: 10px" />
+          <el-divider style="margin-top: 5px" />
           <div class="license-plate-recognition">
             <span class="icon-text">
               <el-icon class="icon-margin"><Van /></el-icon>车牌识别
@@ -122,7 +147,7 @@ let licensePlateColor = ref("white");
             </text>
             <div v-else class="lpt-empty"></div>
           </div>
-          <el-divider style="margin-top: 10px" />
+          <el-divider style="margin-top: 5px" />
           <div class="license-plate-color">
             <span class="icon-text">
               <el-icon class="icon-margin"><Van /></el-icon>车牌颜色
@@ -130,26 +155,58 @@ let licensePlateColor = ref("white");
             <div v-if="licensePlateColor" class="lpc"></div>
             <div v-else class="lpc"></div>
           </div>
+          <el-divider style="margin-top: 5px" />
+          <div class="license-plate-pre">
+            <span class="icon-text">
+              <el-icon class="icon-margin"><Van /></el-icon>预处理图片
+            </span>
+            <div class="demo-image__placeholder">
+              <div
+                class="block"
+                v-for="(item, index) in imgPreText"
+                :key="index"
+              >
+                <span class="demonstration">{{ item }}</span>
+                <el-image
+                  v-if="imgsPreText[index]"
+                  :zoom-rate="1.2"
+                  :preview-src-list="imgsPreText"
+                  :src="imgsPreText[index]"
+                  :initial-index="index"
+                />
+                <div v-else style="width: 100%; height: 50px"></div>
+              </div>
+            </div>
+          </div>
           <el-divider style="margin-top: 10px" />
         </div>
       </el-main>
     </el-container>
   </div>
+
+  <div class="footer">{{ nowTime }}</div>
 </template>
 
 <style scoped>
 .common-layout {
+  width: 95%;
+  background-color: rgba(255, 255, 255, 0.68);
   margin-top: 0.5rem;
+  border: 1px solid #409eff;
+  border-radius: 20px;
+  box-shadow: 0px 12px 8px -12px #409eff;
+  padding: 10px;
 }
 .upload-img-area {
   height: 600px;
-  border: 1px solid #409eff;
+  /* border: 1px solid #409eff; */
   border-right: none;
   border-radius: 20px 0 0 20px;
 }
 .result-area {
   height: 600px;
-  border: 1px solid #409eff;
+  /* border: 1px solid #409eff; */
+  border-left: 1px solid #409eff;
   border-radius: 0 20px 20px 0;
 }
 
@@ -194,9 +251,10 @@ let licensePlateColor = ref("white");
 }
 .license-plate-detection-img {
   margin-top: 8px;
-  width: 200px;
+  width: 90%;
   height: 50px;
 }
+
 .license-plate-recognition {
   font-size: 20px;
   margin-top: 15px;
@@ -226,8 +284,43 @@ let licensePlateColor = ref("white");
 }
 .lpc {
   margin: 10px 0 6px 0;
-  width: 200px;
+  width: 90%;
   height: 25px;
   background-color: v-bind(licensePlateColor);
+}
+.footer {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.license-plate-pre {
+  font-size: 20px;
+  margin-top: 15px;
+  color: #409eff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 预处理图片 */
+.demo-image__placeholder {
+  margin-top: 10px;
+  width: 96%;
+}
+.demo-image__placeholder .block {
+  display: inline-block;
+  text-align: center;
+  width: 50%;
+  box-sizing: border-box;
+  vertical-align: top;
+}
+.demo-image__placeholder .demonstration {
+  align-items: center;
+  display: block;
+  color: #909399;
+  font-size: 14px;
+}
+.demo-image__placeholder .el-image {
+  padding: 0 5px;
 }
 </style>
